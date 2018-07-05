@@ -17,6 +17,10 @@ export const saveProgress = payload => ({
 
 export const saveForm = (data) => dispatch =>  {
    console.log(data)
+   delete data.open;
+   delete data.err_msg;
+   delete data.message;
+   console.log(data)  
    dispatch(saveProgress('in Progress'))
    let api_url = `${API_URL}api/save`;
    console.log(api_url)
@@ -25,6 +29,12 @@ export const saveForm = (data) => dispatch =>  {
       url: api_url,
       data: data
     }).then((res)=>{
-      console.log(res)
+      if(res.status===200){
+        return dispatch(saveSuccess(data))
+      }else{
+         return dispatch(saveFailure(res))
+      }
+    }).catch((err)=>{
+         return dispatch(saveFailure(err))
     })
 }

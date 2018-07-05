@@ -1,14 +1,18 @@
 import { 
 	authUserSuccess,
     authUserFailure,
-    authUserProgress
+    authUserProgress,
+    authOutUserSuccess,
+    authOutUserFailure,
+    authOutUserProgress
   } from '../actions/auth-actions';
 
 const initialState = {
 	 users:{},
 	 fetched:false,
 	 error:'',
-	 progress:false
+	 progress:false,
+	 logIn:false
 }
 export default function authReducer(state = initialState, {type,payload}) {
 	switch(type){
@@ -16,19 +20,45 @@ export default function authReducer(state = initialState, {type,payload}) {
 		return {
 			...state,
 			fetched:false,
+			logIn:false,
 			progress:true
 		}
 	 case authUserSuccess :
 		return {
 			...state,
 			fetched:true,
-			users:payload
+			logIn:true,
+			users:payload,
+			progress:false
 		}
 	 case authUserFailure :
 		return {
 			...state,
 			fetched:false,
-			error:payload
+			logIn:false,
+			error:payload,
+			progress:false
+		}
+	 case authOutUserProgress :
+		return {
+			...state,
+			fetched:true,
+			progress:true
+		}
+	 case authOutUserSuccess :
+		return {
+			...state,
+			fetched:false,
+			logIn:false,
+			users:{},
+			progress:false
+		}
+	 case authOutUserFailure :
+		return {
+			...state,
+			fetched:true,
+			error:payload,
+			progress:false
 		}
 	 default :
 	    return state;

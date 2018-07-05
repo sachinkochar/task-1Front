@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import { Redirect } from 'react-router';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -10,7 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 import {connect} from 'react-redux';
-import { loginUsers } from '../actions/auth-actions';
+import { loginUsers, getUsers } from '../actions/auth-actions';
 
 const styles = theme => ({
   container: {
@@ -69,6 +70,10 @@ class SignIn extends React.Component {
   	}
   }
 
+  componentWillMount(){
+    this.props.getUsers();
+  }
+
   handleOpen = () => {
     this.setState({ open: true });
   };
@@ -94,13 +99,15 @@ class SignIn extends React.Component {
   }
 	componentWillReceiveProps(nextProps){
 	  	console.log(nextProps,'nextProps')
+      if(nextProps.users_data.user.progress){
+        console.log('loggin in....')
+      }
 	}
 
 
 
   render() {
     const { classes } = this.props;
-
     return (
     	<div>
 		<Header/>
@@ -157,18 +164,22 @@ class SignIn extends React.Component {
             </Typography>
           </div>
         </Modal>
+         {this.props.users_data && this.props.users_data.user.logged_in && (
+          <Redirect to={{
+              pathname: '/',
+            }}/>
+          )}
 		</div>
     );
   }
 }
 const mapStateToProps = state => ({
-  users:state.users,
-  fetched:state.fetched,
-  progress:state.progress
+  users_data:state
 });
 
 const mapDispatchToProps = {
-  loginUsers
+  loginUsers,
+  getUsers
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(withStyles(styles)(SignIn));

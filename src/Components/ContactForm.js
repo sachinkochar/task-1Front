@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router'
 import { withStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
@@ -65,9 +66,9 @@ class SignIn extends React.Component {
   constructor(props){
   	super(props);
   	this.state={
-  		user:'',
+  		first_name:'',
   		password:'',
-      lastName:'',
+      last_name:'',
       email:'',
       phone:'',
       address:'',
@@ -77,7 +78,8 @@ class SignIn extends React.Component {
       country:'',
       comments:'',
       open:false,
-      err_msg:''
+      err_msg:'',
+      message:false
   	}
   }
 
@@ -96,7 +98,7 @@ class SignIn extends React.Component {
     });
   };
   handleClick=()=>{
-    if(this.state.name ==='' || this.state.lastName ==='' || this.state.address =='' || this.state.state ==='' || this.state.city ==='' || this.state.zip ==='' || this.state.country ==='' || this.state.comments ==='' ){
+    if(this.state.first_name ==='' || this.state.last_name ==='' || this.state.address =='' || this.state.state ==='' || this.state.city ==='' || this.state.zip ==='' || this.state.country ==='' || this.state.comments ==='' ){
       console.log('test')
         this.setState({
           err_msg:'All fields are mandatory'
@@ -122,9 +124,26 @@ class SignIn extends React.Component {
       }
   }
 
+  componentWillReceiveProps(nextProps){
+    console.log(nextProps)
+    if(nextProps.user_data.save.progress){
+      console.log('submitting form...')
+    }
+    if(nextProps.user_data.save.saved && !nextProps.user_data.save.error){
+      console.log('submitting form...')
+       this.setState({message:true, err_msg: "Your Form has been submitted."})
+        this.handleOpen();
+        setTimeout(()=>{
+          this.props.history.push("/")
+        },3000)
+    }else if(nextProps.user_data.save.error){
+      this.setState({message:false, err_msg: "Please try submitting your form again."})
+        this.handleOpen();
+    }
+  }
+
   render() {
     const { classes } = this.props;
-
     return (
     	<div>
 		<Header/>
@@ -135,10 +154,10 @@ class SignIn extends React.Component {
         		      <form className={classes.container} noValidate autoComplete="off">
         		        <TextField
         		          id="name"
-                      name="user"
+                      name="first_name"
         		          label="First Name"
         		          className={classes.textField}
-        		          value={this.state.user}
+        		          value={this.state.first_name}
         		          onChange={(e)=>{this.handleChange(e)}}
         		          margin="normal"
         		        />
@@ -146,9 +165,9 @@ class SignIn extends React.Component {
                       id="lastname"
                       label="Last Name"
                       className={classes.textField}
-                      value={this.state.lastName}
+                      value={this.state.last_name}
                       type="text"
-                      name="lastName"
+                      name="last_name"
                       onChange={(e)=>{this.handleChange(e);}}
                       margin="normal"
                     />
@@ -253,7 +272,7 @@ class SignIn extends React.Component {
         >
           <div style={getModalStyle()} className={classes.paperModal}>
             <Typography variant="title" id="modal-title">
-              Error
+              {this.state.message ? 'Thank You' : 'Error'}
             </Typography>
             <Typography variant="subheading"  id="simple-modal-description">
               {this.state.err_msg}
@@ -266,13 +285,11 @@ class SignIn extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  data:state.users,
-  saved:state.fetched,
-  progress:state.progress
+  user_data:state
 });
 
 const mapDispatchToProps = {
   saveForm
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(withStyles(styles)(SignIn));
+export default withRouter(connect(mapStateToProps,mapDispatchToProps)(withStyles(styles)(SignIn)));

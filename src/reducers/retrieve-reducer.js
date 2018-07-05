@@ -1,36 +1,34 @@
 import { 
-	saveSuccess,
-    saveFailure,
-    saveProgress
-  } from '../actions/save-actions';
+	retrieveSuccess,
+    retrieveFailure,
+    retrieveProgress
+  } from '../actions/retrieve-action';
 
 const initialState = {
 	 data:[],
 	 saved:false,
-	 error:false,
+	 error:'',
 	 progress:false
 }
 export default function authReducer(state = initialState, {type,payload}) {
 	switch(type){
-	 case saveProgress :
+	 case retrieveProgress :
 		return {
 			...state,
 			saved:false,
-			progress:true,
-			error:false
+			progress:true
 		}
-	 case saveSuccess :
+	 case retrieveSuccess :
 		return {
 			...state,
 			saved:true,
-			data:[...state.data, payload],
-			error:false
+			data:payload
 		}
-	 case saveFailure :
+	 case retrieveFailure :
 		return {
 			...state,
 			saved:false,
-			error:true
+			error:payload
 		}
 	 default :
 	    return state;
